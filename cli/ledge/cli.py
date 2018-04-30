@@ -7,6 +7,8 @@ This module implements the cli interface for the "ledge" cli application
 """
 import click
 import requests
+import config
+
 
 @click.group()
 def cli():
@@ -21,8 +23,13 @@ def connect(host):
     r = requests.post(url=host+'/connections/')
 
     # if the connection is accepted, store the host information to ~/.ledge/config.yaml
-
+    if r.status_code == 200:
+        config.set('MASTER_HOST', host)
+        print("Connected")
+        print(config.get('MASTER_HOST'))
     # handle error
+    else:
+        print("Error: can't connect to the master host")
 
 @click.command()
 def upload(fpath, config):
