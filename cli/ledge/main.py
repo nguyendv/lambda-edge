@@ -1,3 +1,10 @@
+"""
+ledge.cli
+~~~~~~~~~
+
+This module implements the cli interface for the "ledge" cli application
+
+"""
 import click
 import requests
 
