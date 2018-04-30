@@ -1,4 +1,5 @@
 import click
+import requests
 
 @click.group()
 def cli():
@@ -8,7 +9,13 @@ def cli():
 @click.option('--host', '-h', help="the edge's master host address")
 def connect(host):
     """Connect to a lambda edge network by providing the master host address"""
-    print("connecting...")
+
+    # send CREATE connections to the master host
+    r = requests.post(url=host+'/connections/')
+
+    # if the connection is accepted, store the host information to ~/.ledge/config.yaml
+
+    # handle error
 
 @click.command()
 def upload(fpath, config):
