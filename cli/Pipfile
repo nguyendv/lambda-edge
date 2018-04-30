@@ -11,6 +11,7 @@ pyyaml = "*"
 [dev-packages]
 neovim = "*"
 jedi = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.6"
