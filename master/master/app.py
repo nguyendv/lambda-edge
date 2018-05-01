@@ -1,8 +1,11 @@
-from flask import Flask
+import random
+from flask import Flask, send_file
 from flask import jsonify, request
 from peewee import Model, SqliteDatabase
 from peewee import CharField, IPField
 from peewee import IntegrityError
+
+from pathlib import Path 
 
 db = SqliteDatabase('master.db')
 
@@ -44,3 +47,19 @@ def post_function():
     new_func.save()
     f.save(path)
     return jsonify(id=new_func.id)
+
+@app.route('/functions/<id>', methods=['GET'])
+def get_function(id):
+    func = Function.get_by_id(id)
+    path = Path(func.path)
+    return jsonify(fname=path.name)
+
+@app.route('/clients/', methods=['POST'])
+def post_client():
+    worker_ips = [worker.ip for worker in Worker.select()]
+    return jsonify(gateway=random.choice(worker_ips))
+
+
+@app.route('/download/<fname>', methods=['GET'])
+def download(fname):
+    return send_file('functions/' + fname, as_attachment=True)

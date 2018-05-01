@@ -5,6 +5,7 @@ ledge.cli
 This module implements the cli interface for the "ledge" cli application
 
 """
+import time
 import click
 import requests
 import config
@@ -56,9 +57,28 @@ def upload(fpath, cpath):
         print('Uploading error')
 
 @click.command()
-def execute(id, args):
+@click.option('--id', help='lambda function id')
+@click.option('--arg', help='argument for the lambda function')
+def execute(id, arg):
     """Execute a lambda function by providing the its id and arguments"""
-    print("executing...")
+    
+    # Get a gateway ip
+    host = config.get('MASTER_HOST')
+    r = requests.post(host + '/clients/')
+
+    if r.status_code == 200:
+        gateway_ip = r.json()['gateway']
+    else:
+        print('Error when trying to get a gateway')
+
+    # Send execution request to the gateway
+    gateway_host = 'http://' + gateway_ip + ':5001'
+    argv = [arg]
+    r = requests.post(gateway_host + '/tasks/', json={'id': id, 'argv': argv})
+    if r.status_code == 200:
+        print(r.json()['ret'])
+    else:
+        print('Error when trying to execute the lambda function')
 
 
 cli.add_command(connect)
