@@ -4,3 +4,5 @@
 *.swp
 *.venv
 *.nvim
+master/master/functions/
+master/master/master.db

@@ -8,6 +8,7 @@ This module implements the cli interface for the "ledge" cli application
 import click
 import requests
 import config
+import yaml
 
 
 @click.group()
@@ -32,9 +33,27 @@ def connect(host):
         print("Error: can't connect to the master host")
 
 @click.command()
-def upload(fpath, config):
+@click.option('--fpath', '-f', help="path to the function file")
+@click.option('--cpath', '-c', help='path to the config file')
+def upload(fpath, cpath):
     """Upload a lambda function by providing its path and its config file"""
-    print("uploading...")
+
+    # Read the config file
+    with open(cpath, 'r') as f:
+        conf = yaml.load(f)
+        environment = conf['environment']
+    
+    # TODO: upload environment
+
+    files = {'upload': open(fpath,'rb')}
+
+    host = config.get('MASTER_HOST')
+    r = requests.post(host + '/functions/', files=files)
+
+    if r.status_code == 200:
+        print(r.json()['id'])
+    else:
+        print('Uploading error')
 
 @click.command()
 def execute(id, args):
